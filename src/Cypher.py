@@ -1,9 +1,22 @@
 import sys
-from PIL import Image
 
 class Cypher:
+    '''
+        Cypher
+        - encrypt or decrypt data
+        - Encryption enable with a XOR method using a string key
+        - CBC mode enable
+    '''
 
     def __init__(self, key, size):
+        '''
+        Constructor for Cypher class
+
+        @param self : Cypher
+        @param key  : String
+        @param size : Number
+        @return     : None
+        '''
         self.size = size
         self.key = bytearray()
         self.key.extend(key.encode('utf-8')) # key must be byteArray
@@ -11,20 +24,21 @@ class Cypher:
 
     def cypher(self, data):
         '''
-        cypher data with a key
+        Encrypt data with a key using XOR
 
-        @param data: data to cypher
-        @return: byteArray
+        @param self : Cypher
+        @param data : byteArray
+        @return     : byteArray
         '''
         return [ (p ^ l) for (p, l) in zip(data, self.key) ]
 
     @staticmethod
     def _remove_padding(data):
         '''
-        remove byte padding to data
+        Remove byte padding to data
 
-        @param data: byteArray
-        @return: byteArray without padding
+        @param data : byteArray
+        @return     : byteArray
         '''
         pad_len = 0
         for byte in data[::-1]:
@@ -37,11 +51,11 @@ class Cypher:
     @staticmethod
     def _add_padding(data, size):
         '''
-        add byte padding to data depending on size
+        Add byte padding to data depending on size
 
-        @param data: byteArray
-        @param size: int for padding size
-        @return: byteArray with padding
+        @param data : byteArray
+        @param size : Number
+        @return     : byteArray
         '''
         if (len(data) % size != 0):
             paddingSize = size - (len(data) % size)
@@ -52,8 +66,9 @@ class Cypher:
         '''
         Encrypt data with CBC mode
 
-        @param data: byteArray data
-        @return: byteArray encrypted
+        @param self : Cypher
+        @param data : byteArray
+        @return     : byteArray
         '''
         data = Cypher._add_padding(data, self.size)
         result, i, IV = [], 0, range(self.size)
@@ -69,8 +84,9 @@ class Cypher:
         '''
         Decrypt data with CBC mode
 
-        @param data: byteArray data
-        @return: byteArray decrypted
+        @param self : Cypher
+        @param data : byteArray
+        @return     : byteArray
         '''
         result, i, IV = [], 0, range(self.size)
         while i <= len(data):

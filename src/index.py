@@ -1,10 +1,22 @@
-# CBC ECB cryptography
 import argparse
 import string
-from cypher import Cypher
-from steganography import Steganography
+from Cypher import Cypher
+from Steganography import Steganography
+
+'''
+    Mimiqui
+    - Encrypt data from a file then encode it inside a picture
+    - Decode data from a picture then decrypt it in a file
+    - CBC mode encryption
+    - LSB encoding in the picture
+'''
 
 def handleArgs():
+    '''
+    Handle argument from main call
+
+    @return : None
+    '''
     parser = argparse.ArgumentParser(description='mimiqui create image with secret message')
     parser.add_argument('-if', '--image-file',
                         dest='imageInput',
@@ -49,6 +61,11 @@ def handleArgs():
     return parser.parse_args()
 
 def main():
+    '''
+    Main function to handle the script
+
+    @return : None
+    '''
     args = handleArgs()
     cypher = Cypher(args.key, args.size)
     steganography = Steganography(args.imageInput)
@@ -56,13 +73,16 @@ def main():
     with open(args.dataInput, 'rb')  as readFile: # we read as byte with 'rb'
         data = [i for i in readFile.read()]
         if (args.decrypt == True):
-            encoded = steganography.decrypt()
+            encoded = steganography.decode()
             result = cypher.decrypt(encoded)
             with open(args.dataOutput, 'wb') as writeFile:
                 byteArray = bytearray(result)
                 writeFile.write(byteArray)
         else:
             encoded = cypher.encrypt(data)
-            image = steganography.encrypt(encoded)
+            image = steganography.encode(encoded)
             image.save(args.imageOutput, quality=100)
-main()
+
+if __name__ == "__main__":
+    # execute only if run as a script
+    main()

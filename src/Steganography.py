@@ -2,31 +2,31 @@ import sys
 from PIL import Image
 
 class Steganography:
+    '''
+    Steganography
+    - Encode data inside a picture
+    - Decode data from an encoded picture
+    '''
+
     def __init__(self,  url):
+        '''
+        Constructor for Steganography class
+
+        @param self : Steganography
+        @param url  : String
+        @return     : None
+        '''
         self.url = url
         self.image = Image.open(self.url)
         self.width, self.height = self.image.size
-        self.encoded = self.image.copy()
 
-    @staticmethod
-    def _add_padding(data, size):
+    def encode(self, data):
         '''
-        add byte padding to data depending on size
+        Encode data in a picture
 
-        @param data: byteArray
-        @param size: int for padding size
-        @return: byteArray with padding
-        '''
-        if (len(data) % size != 0):
-            paddingSize = size - (len(data) % size)
-            data += b'\x00' * paddingSize
-        return data
-
-    def encrypt(self, data):
-        '''
-        Hide data in the image
-
-        @param data: data to hide in the image
+        @param self : Steganography
+        @param data : byteArray
+        @return     : Image
         '''
         lengthData = len(data)
 
@@ -44,6 +44,8 @@ class Steganography:
         if (self.image.mode not in ['RGB', 'RGBA']):
             raise Exception('Image must be RGB or RGBA.')
 
+        encoded = self.image.copy()
+
         for x in range(self.height):
             for y in range(self.width):
                 if index + 3 <= lengthBits:
@@ -53,17 +55,20 @@ class Steganography:
                     b = pixel[2] & ~1 | int(data[index+2])
 
                     if self.image.mode == 'RGBA':
-                        self.encoded.putpixel((y, x), (r, g, b, pixel[3]))
+                        encoded.putpixel((y, x), (r, g, b, pixel[3]))
                     else:
-                        self.encoded.putpixel((y, x), (r, g, b))
+                        encoded.putpixel((y, x), (r, g, b))
                 index += 3
 
-        return self.encoded
+        return encoded
 
-    def decrypt(self):
-        """
-            Find a message in an image
-        """
+    def decode(self):
+        '''
+        Decode data from a picture
+
+        @param self : Steganography
+        @return     : byteArray
+        '''
         flag, limit, count, buff, result = False, 0, 0, 0, []
         for x in range(self.height):
             for y in range(self.width):

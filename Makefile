@@ -5,6 +5,9 @@ YELLOW := $(shell tput -Txterm setaf 3)
 CYAN := $(shell tput -Txterm setaf 6)
 RESET := $(shell tput -Txterm sgr0)
 
+FOLDER_SRC = src
+FOLDER_DOC = documentation
+
 HELP_FUN = \
 	%help; \
 	while(<>) { \
@@ -22,23 +25,30 @@ HELP_FUN = \
 		print "\n"; \
 	}
 
-.PHONY: help
+.PHONY: help, documentation
 
 help: ##@help print help
 	@perl -e '$(HELP_FUN)' $(MAKEFILE_LIST)
 
 help-python: ##@help print help from python
-	@python main.py -h
+	@python src/index.py -h
 
 install: ##@options install python dependencies
 	@pip install -r requirements.txt
 
+	.PHONY:
+
+documentation: ##@options generate documentation
+	@mkdir -p ${FOLDER_DOC}
+	@pydoc -w ./src/*.py
+	@mv *.html ${FOLDER_DOC}
+
 encrypt: ##@mimiqui encrypt data in the picture
 	@echo "${YELLOW}> encrypt data in image...${RESET}"
-	@python main.py --encrypt --data-file index.txt --image-file index.png --image-output encrypted.png --key allocine --size 16
+	@python ${FOLDER_SRC}/index.py --encrypt --data-file index.txt --image-file index.png --image-output encrypted.png --key allocine --size 16
 	@echo "${GREEN}✓ Wonderful! Your picture is ready in output.png${RESET}"
 
 decrypt: ##@mimiqui decrypt data in the picture
 	@echo "${YELLOW}> decrypt data in image...${RESET}"
-	@python main.py --decrypt --image-file encrypted.png --data-output output --key allocine --size 16
+	@python ${FOLDER_SRC}/index.py --decrypt --image-file encrypted.png --data-output output --key allocine --size 16
 	@echo "${GREEN}✓ Wonderful! Your data is ready in output file${RESET}"
