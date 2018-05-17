@@ -46,6 +46,12 @@ def handleArgs():
                         default=16,
                         help='size for each block in cypher (default: 16)')
 
+    parser.add_argument('-c', '--compression',
+                        dest='compression',
+                        type=int,
+                        default=4,
+                        help='compression value [1-8] (default: 4)')
+
     parser.add_argument('-e', '--encrypt',
                         dest='decrypt',
                         action='store_false',
@@ -68,9 +74,9 @@ def main():
     '''
     args = handleArgs()
     cypher = Cypher(args.key, args.size)
-    steganography = Steganography(args.imageInput)
+    steganography = Steganography(args.imageInput, args.compression)
 
-    with open(args.dataInput, 'rb')  as readFile: # we read as byte with 'rb'
+    with open(args.dataInput, 'rb')  as readFile:
         data = [i for i in readFile.read()]
         if (args.decrypt == True):
             encoded = steganography.decode()
@@ -84,5 +90,4 @@ def main():
             image.save(args.imageOutput, quality=100)
 
 if __name__ == "__main__":
-    # execute only if run as a script
     main()

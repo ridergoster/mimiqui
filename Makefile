@@ -45,10 +45,10 @@ documentation: ##@options generate documentation
 
 encrypt: ##@mimiqui encrypt data in the picture
 	@echo "${YELLOW}> encrypt data in image...${RESET}"
-	@python ${FOLDER_SRC}/index.py --encrypt --data-file index.txt --image-file index.png --image-output encrypted.png --key allocine --size 16
+	@python ${FOLDER_SRC}/index.py --encrypt --data-file index.txt --image-file index.png --image-output encrypted.png --key allocine --size 16 --compression 4
 	@echo "${GREEN}✓ Wonderful! Your picture is ready in output.png${RESET}"
 
 decrypt: ##@mimiqui decrypt data in the picture
 	@echo "${YELLOW}> decrypt data in image...${RESET}"
-	@python ${FOLDER_SRC}/index.py --decrypt --image-file encrypted.png --data-output output --key allocine --size 16
+	@python ${FOLDER_SRC}/index.py --decrypt --image-file encrypted.png --data-output output --key allocine --size 16 --compression 4
 	@echo "${GREEN}✓ Wonderful! Your data is ready in output file${RESET}"
