@@ -37,12 +37,12 @@ def handleArgs():
     parser.add_argument('-e', '--encrypt',
                         dest='decrypt',
                         action='store_false',
-                        help='select encrypt mode (default: false)')
+                        help='select encrypt mode (default: true)')
 
     parser.add_argument('-d', '--decrypt',
                         dest='decrypt',
                         action='store_true',
-                        help='select decrypt mode (default: true)')
+                        help='select decrypt mode (default: false)')
 
     parser.set_defaults(decrypt=False)
     parser.set_defaults(key='maison')
@@ -52,24 +52,17 @@ def main():
     args = handleArgs()
     cypher = Cypher(args.key, args.size)
     steganography = Steganography(args.imageInput)
-    print('cypher', cypher)
 
     with open(args.dataInput, 'rb')  as readFile: # we read as byte with 'rb'
         data = [i for i in readFile.read()]
         if (args.decrypt == True):
             encoded = steganography.decrypt()
-            print('encoded', encoded)
             result = cypher.decrypt(encoded)
-            print('result', result)
+            with open(args.dataOutput, 'wb') as writeFile:
+                byteArray = bytearray(result)
+                writeFile.write(byteArray)
         else:
-            result = cypher.encrypt(data)
-            print('result', result)
-            encoded = steganography.encrypt(result)
-            encoded.save(args.imageOutput, quality=100)
-
-    with open(args.dataOutput, 'wb') as writeFile:
-        byteArray = bytearray(result)
-        writeFile.write(byteArray)
-
-    print('done !')
+            encoded = cypher.encrypt(data)
+            image = steganography.encrypt(encoded)
+            image.save(args.imageOutput, quality=100)
 main()

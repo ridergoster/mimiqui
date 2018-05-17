@@ -29,7 +29,6 @@ class Steganography:
         @param data: data to hide in the image
         '''
         lengthData = len(data)
-        print('lengthData', lengthData)
 
         data = [ord(c) for c in str(lengthData)] + [ord('@')] + data
         data = ''.join([format(char, 'b').zfill(8) for char in data])
@@ -49,9 +48,7 @@ class Steganography:
             for y in range(self.width):
                 if index + 3 <= lengthBits:
                     pixel = self.image.getpixel((y, x))
-                    print('old r', pixel[0])
                     r = pixel[0] & ~1 | int(data[index])
-                    print('new r', r)
                     g = pixel[1] & ~1 | int(data[index+1])
                     b = pixel[2] & ~1 | int(data[index+2])
 
@@ -71,18 +68,10 @@ class Steganography:
         for x in range(self.height):
             for y in range(self.width):
                 pixel = self.image.getpixel((y, x))[:3]
-                print('pixel', pixel)
                 for color in pixel:
-                    buffing = color & 1
-                    print('buffing', buffing)
-                    buff += (buffing << (8 - 1 - count))
-                    print('buff', buff)
-
-                    print('count', count)
+                    buff += ((color & 1) << (8 - 1 - count))
                     count += 1
                     if count == 8:
-                        print('buff-res', buff)
-                        print('buff-res', chr(buff))
                         result.append(buff)
                         buff, count = 0, 0
                         if chr(result[-1]) == "@" and flag == False:
