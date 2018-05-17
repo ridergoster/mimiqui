@@ -30,6 +30,9 @@ help: ##@help print help
 help-python: ##@help print help from python
 	@python main.py -h
 
+install: ##@options install python dependencies
+	@pip install -r requirements.txt
+
 encrypt: ##@mimiqui encrypt data in the picture
 	@echo "${YELLOW}> encrypt data in image...${RESET}"
 	@python main.py --encrypt --data-file index.txt --image-file index.png --image-output encrypted.png --key allocine --size 16
