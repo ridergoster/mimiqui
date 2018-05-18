@@ -1,5 +1,5 @@
 import argparse
-import string
+
 from Cypher import Cypher
 from Steganography import Steganography
 
@@ -73,20 +73,28 @@ def main():
     @return : None
     '''
     args = handleArgs()
-    cypher = Cypher(args.key, args.size)
-    steganography = Steganography(args.imageInput, args.compression)
+    cypher = Cypher(args.key, args.size)  # create the Cypher obj from our Cypher class
+    steganography = Steganography(args.imageInput, args.compression)  # create the Steganography obj from our Steganography class
 
-    with open(args.dataInput, 'rb')  as readFile:
-        data = [i for i in readFile.read()]
-        if (args.decrypt == True):
-            encoded = steganography.decode()
-            result = cypher.decrypt(encoded)
-            with open(args.dataOutput, 'wb') as writeFile:
-                byteArray = bytearray(result)
-                writeFile.write(byteArray)
-        else:
-            encoded = cypher.encrypt(data)
-            image = steganography.encode(encoded)
+    if args.decrypt:  # if decrypt option is used
+        encoded = steganography.decode()  # decode the message hidden into image
+        result = cypher.decrypt(encoded)  # decrypt the message found
+
+        # Write the decrypted message in the output file
+        with open(args.dataOutput, 'wb') as writeFile:
+            byteArray = bytearray(result)
+            writeFile.write(byteArray)
+    else:  # if encrypt option is used
+        # Read bytes of input file
+        with open(args.dataInput, 'rb') as readFile:
+            data = [i for i in readFile.read()]
+            encoded = cypher.encrypt(data)  # encrypt the message
+            image = steganography.encode(encoded)  # encode the message into image
+
+            '''
+            Copy the encoded image to a new file in best quality
+            to ensure that image's bits are not corrupted by compression
+            '''
             image.save(args.imageOutput, quality=100)
 
 if __name__ == "__main__":
